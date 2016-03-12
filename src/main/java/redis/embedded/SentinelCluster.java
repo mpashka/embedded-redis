@@ -12,11 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class RedisCluster implements Redis {
+public class SentinelCluster implements Redis {
     private final List<Redis> sentinels = new LinkedList<>();
     private final List<Redis> servers = new LinkedList<>();
 
-    RedisCluster(List<Redis> sentinels, List<Redis> servers) {
+    SentinelCluster(List<Redis> sentinels, List<Redis> servers) {
         this.servers.addAll(servers);
         this.sentinels.addAll(sentinels);
     }
@@ -160,10 +160,10 @@ public class RedisCluster implements Redis {
             return this;
         }
 
-        public RedisCluster build() {
+        public SentinelCluster build() {
             final List<Redis> sentinels = buildSentinels();
             final List<Redis> servers = buildServers();
-            return new RedisCluster(sentinels, servers);
+            return new SentinelCluster(sentinels, servers);
         }
 
         private List<Redis> buildServers() {

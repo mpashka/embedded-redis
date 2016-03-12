@@ -2,27 +2,19 @@ package redis.embedded.ports;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class SequencePortProviderTest {
 
     @Test
-    public void nextShouldIncrementPorts() throws Exception {
-        //given
+    public void nextShouldIncrementPortsByOne() throws Exception {
         final int startPort = 10;
-        final int portCount = 101;
         final SequencePortProvider provider = new SequencePortProvider(startPort);
 
-        //when
-        int max = 0;
-        for(int i = 0;i<portCount; i++) {
+        for (int i = startPort; i < 15; i++) {
             int port = provider.next();
-            if(port > max) {
-                max = port;
-            }
+            assertThat(port, equalTo(i));
         }
-
-        //then
-        assertEquals(portCount + startPort - 1, max);
     }
 }

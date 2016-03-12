@@ -1,12 +1,10 @@
 package redis.embedded;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import org.junit.*;
+import redis.clients.jedis.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 public class RedisServerSlavesTest {
 
@@ -35,9 +33,9 @@ public class RedisServerSlavesTest {
 
             jedis.mset("abc", "1", "def", "2");
 
-            assertEquals("1", jedis.mget("abc").get(0));
-            assertEquals("2", jedis.mget("def").get(0));
-            assertEquals(null, jedis.mget("xyz").get(0));
+            assertThat(jedis.mget("abc"), contains("1"));
+            assertThat(jedis.mget("def"), contains("2"));
+            assertThat(jedis.mget("xyz"), contains(nullValue()));
         }
     }
 

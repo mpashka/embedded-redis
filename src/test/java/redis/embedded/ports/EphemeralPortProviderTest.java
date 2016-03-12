@@ -5,8 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class EphemeralPortProviderTest {
@@ -24,7 +23,7 @@ public class EphemeralPortProviderTest {
         }
 
         // Then
-        assertEquals(20, ports.size());
+        assertThat(ports.size(), equalTo(20));
         assertThat(ports, everyItem(greaterThan(1024)));
     }
 }

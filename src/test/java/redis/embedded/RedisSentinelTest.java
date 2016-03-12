@@ -1,13 +1,13 @@
 package redis.embedded;
 
-import com.google.common.collect.Sets;
-import org.junit.Test;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisSentinelPool;
+import com.google.common.collect.*;
+import org.junit.*;
+import redis.clients.jedis.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 public class RedisSentinelTest {
     private RedisSentinel sentinel;
@@ -57,9 +57,9 @@ public class RedisSentinelTest {
             jedis.mset("abc", "1", "def", "2");
 
             // Then
-            assertEquals("1", jedis.mget("abc").get(0));
-            assertEquals("2", jedis.mget("def").get(0));
-            assertEquals(null, jedis.mget("xyz").get(0));
+            assertThat(jedis.mget("abc"), contains("1"));
+            assertThat(jedis.mget("def"), contains("2"));
+            assertThat(jedis.mget("xyz"), contains(nullValue()));
         } finally {
             sentinel.stop();
             server.stop();

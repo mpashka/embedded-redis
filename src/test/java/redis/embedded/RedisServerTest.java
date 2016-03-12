@@ -1,20 +1,28 @@
 package redis.embedded;
 
 import com.google.common.io.Resources;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.embedded.exceptions.*;
+import redis.embedded.exceptions.EmbeddedRedisException;
+import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.Architecture;
 import redis.embedded.util.OS;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class RedisServerTest {
 
     private RedisServer redisServer;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @After
     public void stopServer() {
@@ -33,11 +41,14 @@ public class RedisServerTest {
         redisServer.stop();
     }
 
-    @Test(expected = EmbeddedRedisException.class)
+    @Test
     public void shouldNotAllowMultipleRunsWithoutStop() throws Exception {
         try {
             redisServer = new RedisServer(6379);
             redisServer.start();
+
+            exception.expect(EmbeddedRedisException.class);
+            exception.expectMessage("This redis server instance is already running...");
             redisServer.start();
         } finally {
             redisServer.stop();
@@ -68,9 +79,9 @@ public class RedisServerTest {
 
             jedis.mset("abc", "1", "def", "2");
 
-            assertEquals("1", jedis.mget("abc").get(0));
-            assertEquals("2", jedis.mget("def").get(0));
-            assertEquals(null, jedis.mget("xyz").get(0));
+            assertThat(jedis.mget("abc"), contains("1"));
+            assertThat(jedis.mget("def"), contains("2"));
+            assertThat(jedis.mget("xyz"), contains(nullValue()));
         }
     }
 
@@ -78,7 +89,7 @@ public class RedisServerTest {
     public void shouldIndicateInactiveBeforeStart() throws Exception {
         redisServer = new RedisServer(6379);
 
-        assertFalse(redisServer.isActive());
+        assertThat(redisServer.isActive(), is(false));
     }
 
     @Test
@@ -86,7 +97,7 @@ public class RedisServerTest {
         redisServer = new RedisServer(6379);
         redisServer.start();
 
-        assertTrue(redisServer.isActive());
+        assertThat(redisServer.isActive(), is(true));
     }
 
     @Test
@@ -96,7 +107,7 @@ public class RedisServerTest {
         redisServer.start();
         redisServer.stop();
 
-        assertFalse(redisServer.isActive());
+        assertThat(redisServer.isActive(), is(false));
     }
 
     @Test
@@ -113,13 +124,16 @@ public class RedisServerTest {
                 .build();
     }
 
-    @Test(expected = RedisBuildingException.class)
+    @Test
     public void shouldFailWhenBadExecutableGiven() throws Exception {
         RedisExecProvider buggyProvider = RedisExecProvider.defaultProvider()
                 .override(OS.UNIX, "some")
                 .override(OS.WINDOWS, Architecture.x86, "some")
                 .override(OS.WINDOWS, Architecture.x86_64, "some")
                 .override(OS.MAC_OS_X, "some");
+
+        exception.expect(RedisBuildingException.class);
+        exception.expectMessage("Failed to resolve executable");
 
         redisServer = new RedisServer.Builder()
                 .redisExecProvider(buggyProvider)
