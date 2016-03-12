@@ -1,7 +1,7 @@
 embedded-redis [![Build Status](https://travis-ci.org/fmonniot/embedded-redis.svg?branch=master)](https://travis-ci.org/fmonniot/embedded-redis)
 ==============
 
-This is a fork of https://github.com/kstyrc/embedded-redis and does not support windows.
+_This is a fork of https://github.com/kstyrc/embedded-redis and does not support windows._
 
 Redis embedded server for Java integration testing
 
