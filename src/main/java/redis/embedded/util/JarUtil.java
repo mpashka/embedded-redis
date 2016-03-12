@@ -3,6 +3,7 @@ package redis.embedded.util;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.apache.commons.io.FileUtils;
+import redis.embedded.exceptions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,10 @@ public class JarUtil {
         File command = new File(tmpDir, executable);
         FileUtils.copyURLToFile(Resources.getResource(executable), command);
         command.deleteOnExit();
-        command.setExecutable(true);
+        if (!command.setExecutable(true)) {
+            //should not ever happen
+            throw new RedisBuildingException("Cannot make file " + command.getName() + " executable.");
+        }
 
         return command;
     }

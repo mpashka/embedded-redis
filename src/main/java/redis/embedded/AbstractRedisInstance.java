@@ -1,20 +1,22 @@
 package redis.embedded;
 
+import org.apache.commons.io.IOUtils;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
-
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
-	private Process redisProcess;
+    private Process redisProcess;
     private final int port;
 
     private ExecutorService executor;
@@ -28,7 +30,7 @@ abstract class AbstractRedisInstance implements Redis {
         return active;
     }
 
-	@Override
+    @Override
     public synchronized void start() throws EmbeddedRedisException {
         if (active) {
             throw new EmbeddedRedisException("This redis server instance is already running...");
@@ -98,7 +100,7 @@ abstract class AbstractRedisInstance implements Redis {
 
     @Override
     public List<Integer> ports() {
-        return Arrays.asList(port);
+        return Collections.singletonList(port);
     }
 
     private static class PrintReaderRunnable implements Runnable {

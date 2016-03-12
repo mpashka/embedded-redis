@@ -9,12 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PredefinedPortProvider implements PortProvider {
-    private final List<Integer> ports = new LinkedList<Integer>();
     private final Iterator<Integer> current;
 
     public PredefinedPortProvider(Collection<Integer> ports) {
-        this.ports.addAll(ports);
-        this.current = this.ports.iterator();
+        List<Integer> ports1 = new LinkedList<>();
+        ports1.addAll(ports);
+        this.current = ports1.iterator();
     }
 
     @Override
