@@ -1,37 +1,21 @@
 embedded-redis
 ==============
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kstyrc/embedded-redis?branch=master&svg=true)](https://ci.appveyor.com/project/kstyrc/embedded-redis) Windows
+[![Build Status](https://travis-ci.org/fmonniot/embedded-redis.svg?branch=master)](https://travis-ci.org/fmonniot/embedded-redis)
 
-[![Build Status](https://travis-ci.org/kstyrc/embedded-redis.png?branch=master)](https://travis-ci.org/kstyrc/embedded-redis) Linux
+This is a fork of https://github.com/kstyrc/embedded-redis and does not support windows.
 
 Redis embedded server for Java integration testing
 
 Maven dependency
 ==============
 
-Maven Central:
+Maven Central (not available yet):
 ```xml
 <dependency>
-  <groupId>com.github.kstyrc</groupId>
+  <groupId>eu.monniot.redis</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.6</version>
-</dependency>
-```
-
-Previous releases (before 0.6):
-```xml
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-
-...
-
-<dependency>
-  <groupId>redis.embedded</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>0.5</version>
+  <version>1.0</version>
 </dependency>
 ```
 
@@ -174,29 +158,3 @@ Contributors
  * Artem Orobets ([@enisher](http://github.com/enisher))
  * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
  * Rob Winch ([@rwinch](http://github.com/rwinch))
-
-
-Changelog
-==============
-
-### 0.6
- * Support JDK 6 +
-
-### 0.5
- * OS detection fix
- * redis binary per OS/arch pair
- * Updated to 2.8.19 binary for Windows
-
-### 0.4 
- * Updated for Java 8
- * Added Sentinel support
- * Ability to create arbitrary clusters on arbitrary (ephemeral) ports
- * Updated to latest guava 
- * Throw an exception if redis has not been started
- * Redis errorStream logged to System.out
-
-### 0.3
- * Fluent API for RedisServer creation
-
-### 0.2
- * Initial decent release
