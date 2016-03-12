@@ -14,6 +14,7 @@ public class RedisSentinelTest {
     private RedisServer server;
 
     @Test(timeout = 3000L)
+    @Configuration(sentinel = 1, master = 1)
     public void testSimpleRun() throws Exception {
         server = new RedisServer();
         sentinel = RedisSentinel.builder().build();
@@ -28,6 +29,7 @@ public class RedisSentinelTest {
     }
 
     @Test
+    @Configuration(sentinel = 1)
     public void shouldAllowSubsequentRuns() throws Exception {
         sentinel = RedisSentinel.builder().build();
 
@@ -42,6 +44,7 @@ public class RedisSentinelTest {
     }
 
     @Test
+    @Configuration(sentinel = 1, master = 1)
     public void testSimpleOperationsAfterRun() throws Exception {
         // Given
         server = new RedisServer();

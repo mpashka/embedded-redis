@@ -7,7 +7,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 import redis.embedded.util.JedisUtil;
 
-import java.lang.annotation.*;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -36,6 +35,7 @@ public class SentinelClusterTest {
 
 
     @Test
+    @Configuration(sentinel = 2, master = 2)
     public void stopShouldStopEntireCluster() throws Exception {
         // Given
         final List<Redis> sentinels = Arrays.asList(sentinel1, sentinel2);
@@ -55,6 +55,7 @@ public class SentinelClusterTest {
     }
 
     @Test
+    @Configuration(sentinel = 2, master = 2)
     public void startShouldStartEntireCluster() throws Exception {
         // Given
         final List<Redis> sentinels = Arrays.asList(sentinel1, sentinel2);
@@ -74,6 +75,7 @@ public class SentinelClusterTest {
     }
 
     @Test
+    @Configuration(sentinel = 2, master = 2)
     public void isActiveShouldCheckEntireClusterIfAllActive() throws Exception {
         // Given
         given(sentinel1.isActive()).willReturn(true);
@@ -195,6 +197,7 @@ public class SentinelClusterTest {
         testClusterWithThreeMasters(masters, cluster, sentinelHosts);
     }
 
+    // Helper
     private void testClusterWithThreeMasters(String[] masters, SentinelCluster cluster, Set<String> sentinelHosts) {
         try (JedisSentinelPool pool1 = new JedisSentinelPool(masters[0], sentinelHosts);
              JedisSentinelPool pool2 = new JedisSentinelPool(masters[1], sentinelHosts);
@@ -208,6 +211,7 @@ public class SentinelClusterTest {
         }
     }
 
+    // Helper
     private void testClusterWithOneMaster(Set<String> sentinelHosts, SentinelCluster cluster) {
         try (JedisSentinelPool pool = new JedisSentinelPool("ourmaster", sentinelHosts)) {
             thenTestPool(pool);
@@ -216,6 +220,7 @@ public class SentinelClusterTest {
         }
     }
 
+    // Test Case
     private void thenTestPool(JedisSentinelPool pool) {
         try (Jedis jedis = pool.getResource()) {
 
@@ -228,17 +233,4 @@ public class SentinelClusterTest {
         }
     }
 
-    /**
-     * A simple annotation which let us have a quick view of what the test configuration is.
-     * This annotation do _absolutely nothing_
-     */
-    @SuppressWarnings("unused")
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Configuration {
-        int master() default 0;
-
-        int slave() default 0;
-
-        int sentinel() default 0;
-    }
 }
