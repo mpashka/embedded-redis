@@ -153,9 +153,10 @@ Licensed under the Apache License, Version 2.0
 
 Contributors
 ==============
- * Krzysztof Styrc ([@kstyrc](http://github.com/kstyrc))
- * Piotr Turek ([@turu](http://github.com/turu))
- * anthonyu ([@anthonyu](http://github.com/anthonyu))
- * Artem Orobets ([@enisher](http://github.com/enisher))
- * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
- * Rob Winch ([@rwinch](http://github.com/rwinch))
+ * François Monniot ([@fmonniot](https://github.com/fmonniot))
+ * Krzysztof Styrc ([@kstyrc](https://github.com/kstyrc))
+ * Piotr Turek ([@turu](https://github.com/turu))
+ * anthonyu ([@anthonyu](https://github.com/anthonyu))
+ * Artem Orobets ([@enisher](https://github.com/enisher))
+ * Sean Simonsen ([@SeanSimonsen](https://github.com/SeanSimonsen))
+ * Rob Winch ([@rwinch](https://github.com/rwinch))
