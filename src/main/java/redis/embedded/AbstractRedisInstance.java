@@ -1,17 +1,15 @@
 package redis.embedded;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.*;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
@@ -20,6 +18,8 @@ abstract class AbstractRedisInstance implements Redis {
     private final int port;
 
     private ExecutorService executor;
+
+    private OutputStream errorsStream = System.out;
 
     protected AbstractRedisInstance(int port) {
         this.port = port;
@@ -37,20 +37,28 @@ abstract class AbstractRedisInstance implements Redis {
         }
         try {
             redisProcess = createRedisProcessBuilder().start();
-            logErrors();
+            errors(errorsStream);
+
             awaitRedisServerReady();
+
             active = true;
         } catch (IOException e) {
             throw new EmbeddedRedisException("Failed to start Redis instance", e);
         }
     }
 
-    private void logErrors() {
-        final InputStream errorStream = redisProcess.getErrorStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
-        Runnable printReaderTask = new PrintReaderRunnable(reader);
-        executor = Executors.newSingleThreadExecutor();
-        executor.submit(printReaderTask);
+    @Override
+    public void errors(OutputStream outputStream) {
+        errorsStream = outputStream;
+
+        if (redisProcess != null) {
+            final InputStream errorStream = redisProcess.getErrorStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
+            Runnable printReaderTask = new LogsPrinter(reader, errorsStream);
+
+            executor = Executors.newSingleThreadExecutor();
+            executor.submit(printReaderTask);
+        }
     }
 
     private void awaitRedisServerReady() throws IOException {
@@ -65,7 +73,7 @@ abstract class AbstractRedisInstance implements Redis {
                 }
             } while (!outputLine.matches(redisReadyPattern()));
         } finally {
-            IOUtils.closeQuietly(reader);
+            closeQuietly(reader);
         }
     }
 
@@ -103,18 +111,22 @@ abstract class AbstractRedisInstance implements Redis {
         return Collections.singletonList(port);
     }
 
-    private static class PrintReaderRunnable implements Runnable {
-        private final BufferedReader reader;
+    private static class LogsPrinter implements Runnable {
+        private Logger logger = LoggerFactory.getLogger(LogsPrinter.class);
 
-        private PrintReaderRunnable(BufferedReader reader) {
+        private final BufferedReader reader;
+        private final PrintStream output;
+
+        private LogsPrinter(BufferedReader reader, OutputStream output) {
             this.reader = reader;
+            this.output = new PrintStream(output);
         }
 
         public void run() {
             try {
                 readLines();
             } finally {
-                IOUtils.closeQuietly(reader);
+                closeQuietly(reader);
             }
         }
 
@@ -122,9 +134,10 @@ abstract class AbstractRedisInstance implements Redis {
             try {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    output.println(line);
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                logger.error("Error while reading Redis error stream: ", e);
             }
         }
     }

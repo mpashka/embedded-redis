@@ -4,6 +4,7 @@ import org.slf4j.*;
 import redis.embedded.*;
 import redis.embedded.exceptions.*;
 
+import java.io.*;
 import java.util.*;
 
 public class RedisCluster implements Redis {
@@ -90,6 +91,13 @@ public class RedisCluster implements Redis {
             ports.addAll(redis.ports());
         }
         return ports;
+    }
+
+    @Override
+    public void errors(OutputStream outputStream) {
+        for (Redis server : servers) {
+            server.errors(outputStream);
+        }
     }
 
     private boolean isClusterActive() {

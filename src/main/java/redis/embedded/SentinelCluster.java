@@ -6,6 +6,7 @@ import redis.embedded.ports.EphemeralPortProvider;
 import redis.embedded.ports.PredefinedPortProvider;
 import redis.embedded.ports.SequencePortProvider;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -23,13 +24,13 @@ public class SentinelCluster implements Redis {
 
     @Override
     public boolean isActive() {
-        for(Redis redis : sentinels) {
-            if(!redis.isActive()) {
+        for (Redis redis : sentinels) {
+            if (!redis.isActive()) {
                 return false;
             }
         }
-        for(Redis redis : servers) {
-            if(!redis.isActive()) {
+        for (Redis redis : servers) {
+            if (!redis.isActive()) {
                 return false;
             }
         }
@@ -38,20 +39,20 @@ public class SentinelCluster implements Redis {
 
     @Override
     public void start() throws EmbeddedRedisException {
-        for(Redis redis : sentinels) {
+        for (Redis redis : sentinels) {
             redis.start();
         }
-        for(Redis redis : servers) {
+        for (Redis redis : servers) {
             redis.start();
         }
     }
 
     @Override
     public void stop() throws EmbeddedRedisException {
-        for(Redis redis : sentinels) {
+        for (Redis redis : sentinels) {
             redis.stop();
         }
-        for(Redis redis : servers) {
+        for (Redis redis : servers) {
             redis.stop();
         }
     }
@@ -64,13 +65,23 @@ public class SentinelCluster implements Redis {
         return ports;
     }
 
+    @Override
+    public void errors(OutputStream outputStream) {
+        for (Redis redis : sentinels) {
+            redis.errors(outputStream);
+        }
+        for (Redis redis : servers) {
+            redis.errors(outputStream);
+        }
+    }
+
     public List<Redis> sentinels() {
         return Lists.newLinkedList(sentinels);
     }
 
     public List<Integer> sentinelPorts() {
         List<Integer> ports = new ArrayList<>();
-        for(Redis redis : sentinels) {
+        for (Redis redis : sentinels) {
             ports.addAll(redis.ports());
         }
         return ports;
@@ -82,7 +93,7 @@ public class SentinelCluster implements Redis {
 
     public List<Integer> serverPorts() {
         List<Integer> ports = new ArrayList<>();
-        for(Redis redis : servers) {
+        for (Redis redis : servers) {
             ports.addAll(redis.ports());
         }
         return ports;
@@ -168,7 +179,7 @@ public class SentinelCluster implements Redis {
 
         private List<Redis> buildServers() {
             List<Redis> servers = new ArrayList<>();
-            for(ReplicationGroup g : groups) {
+            for (ReplicationGroup g : groups) {
                 servers.add(buildMaster(g));
                 buildSlaves(servers, g);
             }
@@ -202,7 +213,7 @@ public class SentinelCluster implements Redis {
         private Redis buildSentinel() {
             sentinelBuilder.reset();
             sentinelBuilder.port(nextSentinelPort());
-            for(ReplicationGroup g : groups) {
+            for (ReplicationGroup g : groups) {
                 sentinelBuilder.masterName(g.masterName);
                 sentinelBuilder.masterPort(g.masterPort);
                 sentinelBuilder.quorumSize(quorumSize);
