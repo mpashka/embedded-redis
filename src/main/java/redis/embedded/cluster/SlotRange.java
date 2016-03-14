@@ -16,4 +16,9 @@ class SlotRange {
         }
         return range;
     }
+
+    @Override
+    public String toString() {
+        return "[" + first + ", " + last + "]";
+    }
 }

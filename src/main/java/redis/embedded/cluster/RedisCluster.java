@@ -1,11 +1,14 @@
 package redis.embedded.cluster;
 
+import org.slf4j.*;
 import redis.embedded.*;
 import redis.embedded.exceptions.*;
 
 import java.util.*;
 
 public class RedisCluster implements Redis {
+    private final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
+
     private static final int CLUSTER_HASH_SLOTS_NUMBER = 16384;
     private static final String LOCAL_HOST = "127.0.0.1";
 
@@ -43,19 +46,22 @@ public class RedisCluster implements Redis {
 
         List<MasterNode> masters = allocSlots();
         joinCluster();
-        System.out.println("Waiting for the cluster to join...");
+
+        logger.debug("Starting redis cluster (waiting for the cluster to join)");
         int numRetried = 0;
         while (!isClusterActive()) {
             try {
                 Thread.sleep(1000);
                 numRetried++;
                 if (numRetried == maxNumOfRetries) {
-                    throw new EmbeddedRedisException("Redis cluster have not started.");
+                    throw new EmbeddedRedisException("Redis cluster have not started after " + (numRetried + 1) + " seconds.");
                 }
             } catch (InterruptedException e) {
                 throw new EmbeddedRedisException(e.getMessage(), e);
             }
         }
+        logger.debug("Redis cluster started");
+
         setReplicates(masters);
     }
 
@@ -154,10 +160,7 @@ public class RedisCluster implements Redis {
                 // Get node id
                 String curNodeId = jedis.getNodeId();
 
-                System.out.println(String.format("Master node: %s with slots[%d,%d]",
-                        curNodeId,
-                        master.getSlotRange().first,
-                        master.getSlotRange().last));
+                logger.debug("Master node: {} with slots {}", curNodeId, master.getSlotRange());
 
                 master.setNodeId(curNodeId);
             }
