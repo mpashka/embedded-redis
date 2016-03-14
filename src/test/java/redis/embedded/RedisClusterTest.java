@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
-public class RealRedisClusterTest {
+public class RedisClusterTest {
     private Redis master1;
     private Redis master2;
     private Redis master3;
