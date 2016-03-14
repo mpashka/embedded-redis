@@ -4,7 +4,11 @@ import redis.clients.jedis.*;
 
 import java.io.*;
 
-// TODO Remove dependency on Jedis
+/**
+ * A minimal client implementation to pass some commands to a single redis server.
+ * This implementation rely on Jedis to make the all calls (removing the dependency on Jedis could be done
+ * but will add a serious complexity to this project, hence the dependency).
+ */
 class Client implements Closeable {
 
     private final Jedis jedis;
