@@ -43,7 +43,8 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-repo-maven-example</id>
+            <id>bintray-fmonniot-maven</id>
+            <name>fmonniot-maven</name>
             <url>https://api.bintray.com/maven/${bintray.subject}/maven/${bintray.package}/;publish=1</url>
         </repository>
     </distributionManagement>
