@@ -1,6 +1,15 @@
+### 1.0.3
 
-Below are the changelog for the original `embedded-redis`,
-versions of this fork can be found on the [Release Page](https://github.com/fmonniot/embedded-redis/releases).
+ * Deprecates use of `builder()` methods, use `Builder` class directly
+
+### 1.0.1 -> 1.0.2
+ * Miscellaneous fixes to get this lib on jCenter 
+
+### 1.0
+ * Rename RedisCluster into SentinelCluster
+ * Introduce a real redis cluster support (thx to @3Dragan for the initial work)
+ * Make all Builder inner classes
+ * Possibility to provide your own OutputStream for logs (instead of System.out)
 
 ### 0.6
  * Support JDK 6 +
