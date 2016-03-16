@@ -18,6 +18,7 @@ public class RedisSentinel extends AbstractRedisInstance {
         this.args = new ArrayList<>(args);
     }
 
+    @Deprecated
     public static Builder builder() {
         return new Builder();
     }

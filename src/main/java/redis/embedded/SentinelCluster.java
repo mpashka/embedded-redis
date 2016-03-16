@@ -99,6 +99,7 @@ public class SentinelCluster implements Redis {
         return ports;
     }
 
+    @Deprecated
     public static Builder builder() {
         return new Builder();
     }
