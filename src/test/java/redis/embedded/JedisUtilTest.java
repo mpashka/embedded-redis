@@ -1,10 +1,7 @@
 package redis.embedded;
 
-import com.google.common.collect.ImmutableSet;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
-import redis.embedded.RedisServer;
-import redis.embedded.SentinelCluster;
 import redis.embedded.util.JedisUtil;
 
 import java.util.Arrays;
@@ -13,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 public class JedisUtilTest {
 
