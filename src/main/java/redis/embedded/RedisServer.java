@@ -29,14 +29,6 @@ public class RedisServer extends AbstractRedisInstance {
         );
     }
 
-    public RedisServer(File executable, int port) {
-        super(port);
-        this.args = Arrays.asList(
-                executable.getAbsolutePath(),
-                "--port", Integer.toString(port)
-        );
-    }
-
     public RedisServer(RedisExecProvider redisExecProvider, int port) throws IOException {
         super(port);
         this.args = Arrays.asList(
@@ -45,7 +37,7 @@ public class RedisServer extends AbstractRedisInstance {
         );
     }
 
-    RedisServer(List<String> args, int port) {
+    private RedisServer(List<String> args, int port) {
         super(port);
         this.args = new ArrayList<>(args);
     }
