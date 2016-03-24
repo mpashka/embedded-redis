@@ -130,8 +130,8 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
-    public void portProviderShouldReplacePorts() {
-        final PortProvider portProvider = new SequencePortProvider(3000, 3003);
+    public void portsShouldReplacePortProvider() {
+        final PortProvider portProvider = new SequencePortProvider(3100, 3103);
 
         instance = new RedisCluster.Builder()
                 .serverPorts(ports)
@@ -144,7 +144,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
-    public void portsShouldReplacePortProvider() {
+    public void portProvidersAreUsedToCreateCluster() {
         final PortProvider portProvider = new SequencePortProvider(3000, 3003);
 
         instance = new RedisCluster.Builder()
@@ -152,7 +152,7 @@ public class RedisClusterTest {
                 .numOfMasters(3)
                 .build();
 
-        instance.start();
+        assertThat(instance.ports(), equalTo(ports));
     }
 
     @Test
