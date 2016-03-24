@@ -41,6 +41,16 @@ public class RedisServerTest {
         redisServer.stop();
     }
 
+    @Test(timeout = 1500L)
+    public void testSimpleRunWithExecProvider() throws Exception {
+        redisServer = new RedisServer(RedisExecProvider.build(), 6379);
+        redisServer.start();
+
+        TimeUnit.SECONDS.sleep(1);
+
+        redisServer.stop();
+    }
+
     @Test
     public void shouldNotAllowMultipleRunsWithoutStop() throws Exception {
         try {

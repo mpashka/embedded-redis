@@ -15,7 +15,16 @@ public class RedisExecProvider {
 
     private final Map<OsArchitecture, String> executables = Maps.newHashMap();
 
+    /**
+     * @deprecated use {@link #build()} instead
+     * @return a new RedisExecProvider instance
+     */
+    @Deprecated
     public static RedisExecProvider defaultProvider() {
+        return new RedisExecProvider();
+    }
+
+    public static RedisExecProvider build() {
         return new RedisExecProvider();
     }
 
