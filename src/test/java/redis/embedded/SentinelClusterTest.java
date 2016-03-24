@@ -213,9 +213,14 @@ public class SentinelClusterTest {
 
     // Helper
     private void testClusterWithOneMaster(Set<String> sentinelHosts, SentinelCluster cluster) {
-        try (JedisSentinelPool pool = new JedisSentinelPool("ourmaster", sentinelHosts)) {
+        JedisSentinelPool pool = null;
+        try {
+            pool = new JedisSentinelPool("ourmaster", sentinelHosts);
             thenTestPool(pool);
         } finally {
+            if (pool != null) {
+                pool.destroy();
+            }
             cluster.stop();
         }
     }
