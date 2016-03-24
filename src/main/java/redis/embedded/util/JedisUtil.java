@@ -7,8 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class JedisUtil {
+/**
+ * A bunch of helpers function to get Jedis hosts and ports
+ * to use from different instances of embedded-redis.
+ */
+public abstract class JedisUtil {
     public static Set<String> jedisHosts(Redis redis) {
         final List<Integer> ports = redis.ports();
         return portsToJedisHosts(ports);

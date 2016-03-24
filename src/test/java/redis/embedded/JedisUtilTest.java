@@ -1,9 +1,11 @@
-package redis.embedded.util;
+package redis.embedded;
 
 import com.google.common.collect.ImmutableSet;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import redis.embedded.RedisServer;
 import redis.embedded.SentinelCluster;
+import redis.embedded.util.JedisUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,7 +31,7 @@ public class JedisUtilTest {
         Set<String> host = new HashSet<>();
         host.add("localhost:1");
 
-        assertThat(JedisUtil.jedisHosts(server), equalTo(host));
+        MatcherAssert.assertThat(JedisUtil.jedisHosts(server), equalTo(host));
     }
 
     @Test
