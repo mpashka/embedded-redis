@@ -4,7 +4,7 @@ embedded-redis [![Build Status](https://travis-ci.org/fmonniot/embedded-redis.sv
 Redis embedded server for Java integration testing
 
 _This is a fork of https://github.com/kstyrc/embedded-redis and remove support for several features:_
-* _Windows support (could work but not tested)_
+* _Embedded redis binaries, you MUST provide them yourself_
 * _Java 6 support_
 * _Spring data support (should work but not tested)_
 
@@ -30,6 +30,10 @@ redisServer.start();
 // do some work
 redisServer.stop();
 ```
+
+This works as long as you have a `redis-server-3.0.7-*` executables in your path (see
+[redis/embedded/RedisExecProvider.java](https://github.com/fmonniot/embedded-redis/blob/master/src/main/java/redis/embedded/RedisExecProvider.java#L26)
+for the complete list of default binaries paths).
 
 You can also provide RedisServer with your own executable:
 ```java
