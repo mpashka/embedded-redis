@@ -5,9 +5,11 @@ import redis.embedded.exceptions.OsDetectionException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class OSDetector {
+class OSDetector {
 
-    public static OS getOS() {
+    private static Runtime runtime = Runtime.getRuntime();
+
+    static OS getOS() {
         String osName = System.getProperty("os.name").toLowerCase();
 
         if (osName.contains("win")) {
@@ -21,7 +23,7 @@ public class OSDetector {
         }
     }
 
-    public static Architecture getArchitecture() {
+    static Architecture getArchitecture() {
         OS os = getOS();
         switch (os) {
             case WINDOWS:
@@ -50,7 +52,7 @@ public class OSDetector {
         BufferedReader input = null;
         try {
             String line;
-            Process proc = Runtime.getRuntime().exec("uname -m");
+            Process proc = runtime.exec("uname -m");
             input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 if (line.length() > 0) {
@@ -78,7 +80,7 @@ public class OSDetector {
         BufferedReader input = null;
         try {
             String line;
-            Process proc = Runtime.getRuntime().exec("sysctl hw");
+            Process proc = runtime.exec("sysctl hw");
             input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 if (line.length() > 0) {
