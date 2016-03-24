@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 public class EphemeralPortProviderTest {
 
     @Test
-    public void nextShouldGiveNextFreeEphemeralPort() throws Exception {
+    public void nextShouldGiveNextFreeEphemeralPort() {
         // Given
         final int portCount = 20;
         final EphemeralPortProvider provider = new EphemeralPortProvider();
@@ -25,5 +25,18 @@ public class EphemeralPortProviderTest {
         // Then
         assertThat(ports.size(), equalTo(20));
         assertThat(ports, everyItem(greaterThan(1024)));
+    }
+
+    @Test
+    public void hasNextAlwaysReturnTrue() {
+        final EphemeralPortProvider provider = new EphemeralPortProvider();
+
+        assertThat(provider.hasNext(), equalTo(true));
+
+        for (int i = 0; i < 120; i++) {
+            provider.next();
+        }
+
+        assertThat(provider.hasNext(), equalTo(true));
     }
 }

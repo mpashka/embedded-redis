@@ -18,7 +18,7 @@ public class PredefinedPortProviderTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void nextShouldGiveNextPortFromAssignedList() throws Exception {
+    public void nextShouldGiveNextPortFromAssignedList() {
         //given
         Collection<Integer> ports = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final PredefinedPortProvider provider = new PredefinedPortProvider(ports);
@@ -34,7 +34,7 @@ public class PredefinedPortProviderTest {
     }
 
     @Test
-    public void nextShouldThrowExceptionWhenRunOutsOfPorts() throws Exception {
+    public void nextShouldThrowExceptionWhenRunOutsOfPorts() {
         //given
         Collection<Integer> ports = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         final PredefinedPortProvider provider = new PredefinedPortProvider(ports);
@@ -47,5 +47,19 @@ public class PredefinedPortProviderTest {
         exception.expect(RedisBuildingException.class);
         exception.expectMessage("Run out of Redis ports!");
         provider.next();
+    }
+
+    @Test
+    public void hasNextShouldTellIfPortRemain() {
+        Collection<Integer> ports = Arrays.asList(1, 2);
+        final PredefinedPortProvider provider = new PredefinedPortProvider(ports);
+
+        assertThat(provider.hasNext(), equalTo(true));
+        assertThat(provider.next(), equalTo(1));
+
+        assertThat(provider.hasNext(), equalTo(true));
+        assertThat(provider.next(), equalTo(2));
+
+        assertThat(provider.hasNext(), equalTo(false));
     }
 }
