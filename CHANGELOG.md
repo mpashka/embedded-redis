@@ -1,3 +1,10 @@
+### 1.1.0
+
+ * Remove support for RedisServer(File, int) constructor
+ * Remove redis binaries from distributed jar library
+ * Improve PortProvider interface and implementation
+ * RedisCluster.Builder can now use a PortProvider instead of a collection of port
+
 ### 1.0.3
 
  * Deprecates use of `builder()` methods, use `Builder` class directly
