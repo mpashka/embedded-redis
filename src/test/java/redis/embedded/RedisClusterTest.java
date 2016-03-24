@@ -6,8 +6,9 @@ import org.junit.rules.*;
 import redis.clients.jedis.*;
 import redis.embedded.cluster.*;
 import redis.embedded.exceptions.*;
-import redis.embedded.util.*;
+import redis.embedded.ports.SequencePortProvider;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,20 +24,16 @@ public class RedisClusterTest {
     private static final Collection<Integer> ports = Arrays.asList(3000, 3001, 3002, 3003);
     private static final String LOCAL_HOST = "127.0.0.1";
 
-    private RedisExecProvider redisExecProvider;
     private Redis instance;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         master1 = mock(Redis.class);
         master2 = mock(Redis.class);
         master3 = mock(Redis.class);
-
-        redisExecProvider = RedisExecProvider.defaultProvider();
-        redisExecProvider.override(OS.UNIX, "redis-server-3.0.7");
     }
 
     @After
@@ -48,7 +45,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 1)
-    public void numberOfNodeShouldAtLeastThree() throws Exception {
+    public void numberOfNodeShouldAtLeastThree() {
         final List<Redis> oneServer = Collections.singletonList(master1);
 
         exception.expect(EmbeddedRedisException.class);
@@ -58,7 +55,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 2)
-    public void numberOfNodeShouldAtLeastThree2() throws Exception {
+    public void numberOfNodeShouldAtLeastThree2() {
         final List<Redis> twoServers = Arrays.asList(master1, master2);
 
         exception.expect(EmbeddedRedisException.class);
@@ -69,7 +66,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3)
-    public void numberOfReplicatesShouldBeMoreThatOne() throws Exception {
+    public void numberOfReplicatesShouldBeMoreThatOne() {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
 
         exception.expect(EmbeddedRedisException.class);
@@ -80,7 +77,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 10)
-    public void numberOfReplicatesShouldBeLessThanNumberOfServers() throws Exception {
+    public void numberOfReplicatesShouldBeLessThanNumberOfServers() {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
 
         exception.expect(EmbeddedRedisException.class);
@@ -91,7 +88,7 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
-    public void numberOfRetriesShouldBeMoreThanZero() throws Exception {
+    public void numberOfRetriesShouldBeMoreThanZero() {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
 
         exception.expect(EmbeddedRedisException.class);
@@ -102,10 +99,8 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
-    public void isActiveShouldCheckEntireClusterIfAllActive() throws Exception {
+    public void isActiveShouldCheckEntireClusterIfAllActive() {
         instance = new RedisCluster.Builder()
-                .withServerBuilder(new RedisServer.Builder()
-                        .redisExecProvider(redisExecProvider))
                 .serverPorts(ports).build();
 
         instance.start();
@@ -115,10 +110,8 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
-    public void startShouldStartCluster() throws Exception {
+    public void startShouldStartCluster() throws IOException {
         instance = new RedisCluster.Builder()
-                .withServerBuilder(new RedisServer.Builder()
-                        .redisExecProvider(redisExecProvider))
                 .serverPorts(ports).build();
 
         Set<HostAndPort> hostAndPorts = new HashSet<>(ports.size());
@@ -133,5 +126,55 @@ public class RedisClusterTest {
 
             assertThat(jc.hget("key", "field"), equalTo("value"));
         }
+    }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
+    public void portProviderShouldReplacePorts() {
+        final PortProvider portProvider = new SequencePortProvider(3000, 3003);
+
+        instance = new RedisCluster.Builder()
+                .serverPorts(ports)
+                .serverPorts(portProvider)
+                .numOfMasters(3)
+                .build();
+
+        assertThat(instance.ports(), equalTo(ports));
+    }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
+    public void portsShouldReplacePortProvider() {
+        final PortProvider portProvider = new SequencePortProvider(3000, 3003);
+
+        instance = new RedisCluster.Builder()
+                .serverPorts(portProvider)
+                .numOfMasters(3)
+                .build();
+
+        instance.start();
+    }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
+    public void portProviderNeedsTheNumberOfMasterToBeSpecified() {
+        final PortProvider portProvider = new SequencePortProvider(3000, 3003);
+
+        exception.expect(EmbeddedRedisException.class);
+        exception.expectMessage("RedisCluster.Builder requires the number of master with a port provider.");
+
+        instance = new RedisCluster.Builder()
+                .serverPorts(portProvider)
+                .build();
+    }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
+    public void shouldThrowIfNonePortsAreProvided() {
+        exception.expect(EmbeddedRedisException.class);
+        exception.expectMessage("RedisCluster.Builder requires a port provider or a ports collection.");
+
+        instance = new RedisCluster.Builder()
+                .build();
     }
 }

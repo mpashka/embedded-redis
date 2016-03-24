@@ -1,10 +1,13 @@
 package redis.embedded.cluster;
 
-import org.slf4j.*;
-import redis.embedded.*;
-import redis.embedded.exceptions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.embedded.PortProvider;
+import redis.embedded.Redis;
+import redis.embedded.RedisServer;
+import redis.embedded.exceptions.EmbeddedRedisException;
 
-import java.io.*;
+import java.io.OutputStream;
 import java.util.*;
 
 public class RedisCluster implements Redis {
@@ -194,13 +197,15 @@ public class RedisCluster implements Redis {
     public static class Builder {
         private static final int DEFAULT_REPLICATES = 1;
         private static final int DEFAULT_NUMBER_RETRIES = 5;
-        Collection<Integer> ports;
+
+        private Collection<Integer> ports;
+        private PortProvider portProvider;
+
+        private int numOfMasters;
         private int numOfReplicates;
         private int numOfRetries;
-        private int connectionTimeout;
 
         private RedisServer.Builder serverBuilder = new RedisServer.Builder();
-
 
         public Builder withServerBuilder(RedisServer.Builder serverBuilder) {
             this.serverBuilder = serverBuilder;
@@ -209,6 +214,16 @@ public class RedisCluster implements Redis {
 
         public Builder serverPorts(Collection<Integer> ports) {
             this.ports = ports;
+            return this;
+        }
+
+        public Builder serverPorts(PortProvider portProvider) {
+            this.portProvider = portProvider;
+            return this;
+        }
+
+        public Builder numOfMasters(int numOfMasters) {
+            this.numOfMasters = numOfMasters;
             return this;
         }
 
@@ -235,9 +250,24 @@ public class RedisCluster implements Redis {
 
         private List<Redis> buildServers() {
             List<Redis> servers = new ArrayList<>();
-            for (Integer port : ports) {
-                servers.add(buildNode(port));
+
+            if (ports == null) {
+                // Need to know number of master here
+                if (portProvider == null) {
+                    throw new EmbeddedRedisException("RedisCluster.Builder requires a port provider or a ports collection.");
+                } else if (numOfMasters == 0) {
+                    throw new EmbeddedRedisException("RedisCluster.Builder requires the number of master with a port provider.");
+                } else {
+                    while (portProvider.hasNext()) {
+                        servers.add(buildNode(portProvider.next()));
+                    }
+                }
+            } else {
+                for (Integer port : ports) {
+                    servers.add(buildNode(port));
+                }
             }
+
             return servers;
         }
 
