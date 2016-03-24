@@ -5,7 +5,10 @@ import redis.embedded.exceptions.OsDetectionException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-class OSDetector {
+/**
+ * Two utilities methods to find the underlying OS and Architecture
+ */
+abstract class OSDetector {
 
     private static Runtime runtime = Runtime.getRuntime();
 
