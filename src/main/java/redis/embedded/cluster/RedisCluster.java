@@ -7,7 +7,8 @@ import redis.embedded.Redis;
 import redis.embedded.RedisServer;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.*;
 
 public class RedisCluster implements Redis {
@@ -97,10 +98,13 @@ public class RedisCluster implements Redis {
     }
 
     @Override
-    public void errors(OutputStream outputStream) {
-        for (Redis server : servers) {
-            server.errors(outputStream);
+    public InputStream errors() {
+        List<InputStream> inputStreams = new ArrayList<>();
+        for (Redis redis : servers) {
+            inputStreams.add(redis.errors());
         }
+
+        return new SequenceInputStream(Collections.enumeration(inputStreams));
     }
 
     private boolean isClusterActive() {

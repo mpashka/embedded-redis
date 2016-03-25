@@ -7,10 +7,7 @@ import redis.embedded.ports.PredefinedPortProvider;
 import redis.embedded.ports.SequencePortProvider;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class SentinelCluster implements Redis {
@@ -66,13 +63,16 @@ public class SentinelCluster implements Redis {
     }
 
     @Override
-    public void errors(OutputStream outputStream) {
+    public InputStream errors() {
+        List<InputStream> inputStreams = new ArrayList<>();
         for (Redis redis : sentinels) {
-            redis.errors(outputStream);
+            inputStreams.add(redis.errors());
         }
         for (Redis redis : servers) {
-            redis.errors(outputStream);
+            inputStreams.add(redis.errors());
         }
+
+        return new SequenceInputStream(Collections.enumeration(inputStreams));
     }
 
     public List<Redis> sentinels() {

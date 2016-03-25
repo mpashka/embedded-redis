@@ -32,7 +32,7 @@ public interface Redis {
     List<Integer> ports();
 
     /**
-     * @param outputStream a stream which will receive the error output of the underlying Redis implementation
+     * @return An {@link InputStream} of errors streamed by the Redis implementation
      */
-    void errors(OutputStream outputStream);
+    InputStream errors();
 }
