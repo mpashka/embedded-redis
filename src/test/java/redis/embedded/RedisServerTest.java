@@ -1,5 +1,6 @@
 package redis.embedded;
 
+import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Rule;
@@ -12,6 +13,12 @@ import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.Architecture;
 import redis.embedded.util.OS;
 
+import javax.print.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -138,8 +145,7 @@ public class RedisServerTest {
     public void shouldFailWhenBadExecutableGiven() throws Exception {
         RedisExecProvider buggyProvider = RedisExecProvider.defaultProvider()
                 .override(OS.UNIX, "some")
-                .override(OS.WINDOWS, Architecture.x86, "some")
-                .override(OS.WINDOWS, Architecture.x86_64, "some")
+                .override(OS.WINDOWS, "some")
                 .override(OS.MAC_OS_X, "some");
 
         exception.expect(RedisBuildingException.class);
@@ -148,5 +154,51 @@ public class RedisServerTest {
         redisServer = new RedisServer.Builder()
                 .redisExecProvider(buggyProvider)
                 .build();
+    }
+
+    @Test
+    public void shouldLetAccessToLogs() throws IOException {
+        redisServer = new RedisServer.Builder().build();
+        redisServer.start();
+
+        InputStream errors = redisServer.errors();
+        BufferedReader in = new BufferedReader(new InputStreamReader(errors));
+
+        List<String> list = new ArrayList<>(20);
+
+        String s;
+        do {
+            s = in.readLine();
+            list.add(s);
+        } while (s != null);
+
+        assertThat(list.get(18), endsWith(" # Server started, Redis version 3.0.7"));
+        assertThat(list.get(19), endsWith(" * The server is now ready to accept connections on port 6379"));
+    }
+
+    @Test
+    public void shouldLetAccessToLogsWhenError() throws IOException {
+        redisServer = new RedisServer.Builder().build();
+        redisServer.start();
+
+        RedisServer server = new RedisServer.Builder().build();
+        try {
+            server.start();
+        } catch (RuntimeException ignored) {
+
+        }
+
+        InputStream errors = server.errors();
+        BufferedReader in = new BufferedReader(new InputStreamReader(errors));
+
+        List<String> list = new ArrayList<>();
+
+        String s;
+        do {
+            s = in.readLine();
+            list.add(s);
+        } while (s != null);
+
+        assertThat(list.get(0), endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use"));
     }
 }

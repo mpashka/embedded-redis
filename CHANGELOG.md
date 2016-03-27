@@ -1,3 +1,7 @@
+### 1.2.0
+
+ * Use simpler errors() method in Redis interface
+
 ### 1.1.0
 
  * Remove support for RedisServer(File, int) constructor

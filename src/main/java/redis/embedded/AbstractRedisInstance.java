@@ -1,6 +1,5 @@
 package redis.embedded;
 
-import org.apache.commons.io.IOUtils;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.*;
@@ -14,6 +13,8 @@ abstract class AbstractRedisInstance implements Redis {
     private volatile boolean active = false;
     private Process redisProcess;
     private final int port;
+
+    private LogsInputStream logsInput = new LogsInputStream();
 
     AbstractRedisInstance(int port) {
         this.port = port;
@@ -35,23 +36,23 @@ abstract class AbstractRedisInstance implements Redis {
             awaitRedisServerReady();
 
             active = true;
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new EmbeddedRedisException("Failed to start Redis instance", e);
         }
     }
 
     @Override
     public InputStream errors() {
-        if (redisProcess != null) {
-            return redisProcess.getErrorStream();
-        }
-
-        return IOUtils.toInputStream("");
+        return logsInput;
     }
 
-    private void awaitRedisServerReady() throws IOException {
+    private void awaitRedisServerReady() throws IOException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
         try {
+            // Wait 200ms to be sure redis have started (it can takes some time and that would cause
+            // the exception below to throw.
+            Thread.sleep(200);
+
             String outputLine;
             do {
                 outputLine = reader.readLine();
@@ -59,6 +60,7 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
+                logsInput.appendLine(outputLine);
             } while (!outputLine.matches(redisReadyPattern()));
         } finally {
             closeQuietly(reader);
