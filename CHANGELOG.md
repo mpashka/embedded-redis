@@ -1,3 +1,7 @@
+### 1.2.2
+
+ * Fix a possible class path loading error
+
 ### 1.2.1
 
  * Fix a possible deadlock in the AbstractRedisInstance.errors()
