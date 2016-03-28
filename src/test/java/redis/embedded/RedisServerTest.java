@@ -1,27 +1,17 @@
 package redis.embedded;
 
-import com.google.common.base.Strings;
-import com.google.common.io.Resources;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.embedded.exceptions.EmbeddedRedisException;
-import redis.embedded.exceptions.RedisBuildingException;
-import redis.embedded.util.Architecture;
-import redis.embedded.util.OS;
+import com.google.common.io.*;
+import org.junit.*;
+import org.junit.rules.*;
+import redis.clients.jedis.*;
+import redis.embedded.exceptions.*;
+import redis.embedded.util.*;
 
-import javax.print.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 public class RedisServerTest {
@@ -129,7 +119,7 @@ public class RedisServerTest {
 
     @Test
     public void shouldOverrideDefaultExecutable() throws Exception {
-        RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
+        RedisExecProvider customProvider = RedisExecProvider.build()
                 .override(OS.UNIX, Architecture.x86, Resources.getResource("fake-redis-server").getFile())
                 .override(OS.UNIX, Architecture.x86_64, Resources.getResource("fake-redis-server").getFile())
                 .override(OS.WINDOWS, Architecture.x86, Resources.getResource("fake-redis-server").getFile())
@@ -172,8 +162,8 @@ public class RedisServerTest {
             list.add(s);
         } while (s != null);
 
-        assertThat(list.get(18), endsWith(" # Server started, Redis version 3.0.7"));
-        assertThat(list.get(19), endsWith(" * The server is now ready to accept connections on port 6379"));
+        assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.0.7")));
+        assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
     }
 
     @Test
@@ -199,6 +189,6 @@ public class RedisServerTest {
             list.add(s);
         } while (s != null);
 
-        assertThat(list.get(0), endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use"));
+        assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use")));
     }
 }
