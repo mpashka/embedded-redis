@@ -1,3 +1,7 @@
+### 1.2.1
+
+ * Fix a possible deadlock in the AbstractRedisInstance.errors()
+
 ### 1.2.0
 
  * Use simpler errors() method in Redis interface
