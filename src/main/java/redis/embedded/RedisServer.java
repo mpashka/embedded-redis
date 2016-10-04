@@ -63,7 +63,7 @@ public class RedisServer extends AbstractRedisInstance {
         private static final String CONF_FILENAME = "embedded-redis-server";
 
         private File executable;
-        private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
+        private RedisExecProvider redisExecProvider = RedisExecProvider.build();
         private int port = 6379;
         private InetSocketAddress slaveOf;
 
@@ -129,12 +129,18 @@ public class RedisServer extends AbstractRedisInstance {
         public RedisServer.Builder copy() {
             Builder newBuilder = new Builder();
 
-            newBuilder.executable = new File(executable.toURI());
+            newBuilder.executable = (executable != null)
+                    ? new File(executable.toURI())
+                    : null;
             newBuilder.redisExecProvider = redisExecProvider.copy();
             newBuilder.port = port;
-            newBuilder.slaveOf = new InetSocketAddress(slaveOf.getAddress(), slaveOf.getPort());
+            newBuilder.slaveOf = (slaveOf != null)
+                    ? new InetSocketAddress(slaveOf.getAddress(), slaveOf.getPort())
+                    : null;
             newBuilder.redisConf = redisConf;
-            newBuilder.redisConfigBuilder = new StringBuilder(redisConfigBuilder);
+            newBuilder.redisConfigBuilder = (redisConfigBuilder != null)
+                    ? new StringBuilder(redisConfigBuilder)
+                    : null;
 
             return newBuilder;
         }
