@@ -276,13 +276,15 @@ public class RedisCluster implements Redis {
         }
 
         private RedisServer buildNode(Integer port) {
-            serverBuilder.reset();
-            serverBuilder.setting("cluster-enabled yes");
-            serverBuilder.setting("cluster-config-file nodes-" + port + ".conf");
-            serverBuilder.setting("cluster-node-timeout 2000");
-            serverBuilder.setting("appendonly yes");
-            serverBuilder.setting("dbfilename dump-" + port + ".rdb");
-            return serverBuilder.port(port).build();
+            RedisServer.Builder builder = serverBuilder.copy();
+
+            builder.setting("cluster-enabled yes");
+            builder.setting("cluster-config-file nodes-" + port + ".conf");
+            builder.setting("cluster-node-timeout 2000");
+            builder.setting("appendonly yes");
+            builder.setting("dbfilename dump-" + port + ".rdb");
+
+            return builder.port(port).build();
         }
     }
 

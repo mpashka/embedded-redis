@@ -22,7 +22,7 @@ public class RedisServer extends AbstractRedisInstance {
 
     public RedisServer(int port) throws IOException {
         super(port);
-        File executable = RedisExecProvider.defaultProvider().get();
+        File executable = RedisExecProvider.build().get();
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
                 "--port", Integer.toString(port)
@@ -42,6 +42,11 @@ public class RedisServer extends AbstractRedisInstance {
         this.args = new ArrayList<>(args);
     }
 
+    /**
+     * Prefer using {@code new RedisServer.Builder()} directly.
+     *
+     * @return a new Builder for this class
+     */
     @Deprecated
     public static Builder builder() {
         return new Builder();
@@ -119,6 +124,19 @@ public class RedisServer extends AbstractRedisInstance {
             this.redisConfigBuilder = null;
             this.slaveOf = null;
             this.redisConf = null;
+        }
+
+        public RedisServer.Builder copy() {
+            Builder newBuilder = new Builder();
+
+            newBuilder.executable = executable;
+            newBuilder.redisExecProvider = redisExecProvider;
+            newBuilder.port = port;
+            newBuilder.slaveOf = slaveOf;
+            newBuilder.redisConf = redisConf;
+            newBuilder.redisConfigBuilder = redisConfigBuilder;
+
+            return newBuilder;
         }
 
         private void tryResolveConfAndExec() {

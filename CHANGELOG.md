@@ -1,3 +1,8 @@
+### 1.3.0
+
+ * Provides a `RedisServer.Builder#copy()` method
+ * `RedisCluster.Builder` do not `reset()` a provided `RedisServer.Builder` but copy it before applying additional config.
+
 ### 1.2.2
 
  * Fix a possible class path loading error
