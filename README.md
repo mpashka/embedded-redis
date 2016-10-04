@@ -151,16 +151,6 @@ cluster.start();
 The above will create and start a cluster with sentinels on ports ```26739, 26912```, first replication group on ```6667, 6668```,
 second replication group on ```6387, 6379``` and third replication group on ephemeral ports.
 
-Redis version
-==============
-
-When not provided with the desired redis executable, RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
-- Redis 3.0.7 in case of Linux/Unix
-- Redis 3.0.7 in case of OSX
-- no binary in case of Windows (you can find some here: https://github.com/MSOpenTech/redis/releases)
-
-However, you should provide RedisServer with redis executable if you need specific version.
-
 
 License
 ==============
