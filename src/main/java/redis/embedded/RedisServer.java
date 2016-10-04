@@ -66,8 +66,8 @@ public class RedisServer extends AbstractRedisInstance {
         private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
         private int port = 6379;
         private InetSocketAddress slaveOf;
-        private String redisConf;
 
+        private String redisConf;
         private StringBuilder redisConfigBuilder;
 
         public Builder redisExecProvider(RedisExecProvider redisExecProvider) {
@@ -129,14 +129,21 @@ public class RedisServer extends AbstractRedisInstance {
         public RedisServer.Builder copy() {
             Builder newBuilder = new Builder();
 
-            newBuilder.executable = executable;
-            newBuilder.redisExecProvider = redisExecProvider;
+            newBuilder.executable = new File(executable.toURI());
+            newBuilder.redisExecProvider = redisExecProvider.copy();
             newBuilder.port = port;
-            newBuilder.slaveOf = slaveOf;
+            newBuilder.slaveOf = new InetSocketAddress(slaveOf.getAddress(), slaveOf.getPort());
             newBuilder.redisConf = redisConf;
-            newBuilder.redisConfigBuilder = redisConfigBuilder;
+            newBuilder.redisConfigBuilder = new StringBuilder(redisConfigBuilder);
 
             return newBuilder;
+        }
+
+        /**
+         * @return the configuration built using {@code #setting(String)}.
+         */
+        public String settings() {
+            return redisConfigBuilder.toString();
         }
 
         private void tryResolveConfAndExec() {

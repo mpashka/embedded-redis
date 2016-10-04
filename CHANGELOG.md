@@ -1,7 +1,12 @@
+### 1.3.1
+
+ * Fix an immutability problem in `RedisServer.Builder#copy()`
+ * Provides a `RedisServer.Builder#settings()` method to preview the settings of a Builder
+
 ### 1.3.0
 
  * Provides a `RedisServer.Builder#copy()` method
- * `RedisCluster.Builder` do not `reset()` a provided `RedisServer.Builder` but copy it before applying additional config.
+ * `RedisCluster.Builder` do not `reset()` a provided `RedisServer.Builder` but copy it before applying additional config
 
 ### 1.2.2
 

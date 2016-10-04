@@ -16,8 +16,8 @@ public class RedisExecProvider {
     private final Map<OsArchitecture, String> executables = Maps.newHashMap();
 
     /**
-     * @deprecated use {@link #build()} instead
      * @return a new RedisExecProvider instance
+     * @deprecated use {@link #build()} instead
      */
     @Deprecated
     public static RedisExecProvider defaultProvider() {
@@ -60,6 +60,16 @@ public class RedisExecProvider {
                 new File(executablePath) :
                 JarUtil.extractExecutableFromJar(executablePath);
 
+    }
+
+    public RedisExecProvider copy() {
+        RedisExecProvider copy = new RedisExecProvider();
+
+        for (OsArchitecture k : executables.keySet()) {
+            copy.override(k.os(), k.arch(), executables.get(k));
+        }
+
+        return copy;
     }
 
     private boolean fileExists(String executablePath) {

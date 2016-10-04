@@ -28,6 +28,17 @@ public class RedisServerTest {
         }
     }
 
+    @Test
+    public void testBuilderCopy() {
+        RedisServer.Builder builder = new RedisServer.Builder();
+        builder.setting("loglevel verbose");
+
+        RedisServer.Builder copy = builder.copy();
+        copy.setting("logfile /path/to/logs");
+
+        assertThat(builder.settings(), not(equalTo(copy.settings())) );
+    }
+
     @Test(timeout = 1500L)
     public void testSimpleRun() throws Exception {
         redisServer = new RedisServer(6379);
