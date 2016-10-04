@@ -4,7 +4,7 @@
     <groupId>eu.monniot.redis</groupId>
     <artifactId>embedded-redis</artifactId>
     <packaging>jar</packaging>
-    <version>1.3.2</version>
+    <version>1.3.3-SNAPSHOT</version>
     <name>embedded-redis</name>
     <description>Redis embedded server for Java integration testing</description>
     <url>https://github.com/fmonniot/embedded-redis</url>
@@ -21,7 +21,7 @@
         <url>https://github.com/fmonniot/embedded-redis</url>
         <connection>scm:git:https://github.com/fmonniot/embedded-redis.git</connection>
         <developerConnection>scm:git:ssh://github.com/fmonniot/embedded-redis.git</developerConnection>
-        <tag>1.3.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
