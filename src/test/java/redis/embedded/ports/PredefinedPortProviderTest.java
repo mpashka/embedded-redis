@@ -62,4 +62,17 @@ public class PredefinedPortProviderTest {
 
         assertThat(provider.hasNext(), equalTo(false));
     }
+
+    @Test
+    public void copyShouldNotModifyOriginal() {
+        Collection<Integer> ports = Arrays.asList(1, 2);
+        final PredefinedPortProvider provider1 = new PredefinedPortProvider(ports);
+        final PredefinedPortProvider provider2 = provider1.copy();
+
+        assertThat(provider1.next(), equalTo(1));
+        assertThat(provider1.next(), equalTo(2));
+        assertThat(provider1.hasNext(), equalTo(false));
+
+        assertThat(provider2.next(), equalTo(1));
+    }
 }

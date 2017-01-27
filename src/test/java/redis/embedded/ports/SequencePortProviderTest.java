@@ -6,6 +6,9 @@ import org.junit.rules.ExpectedException;
 import redis.embedded.PortProvider;
 import redis.embedded.exceptions.RedisBuildingException;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -63,5 +66,20 @@ public class SequencePortProviderTest {
         exception.expect(RedisBuildingException.class);
         exception.expectMessage("Run out of Redis ports!");
         provider.next();
+    }
+
+
+    @Test
+    public void copyShouldNotModifyOriginal() {
+        final int startPort = 0;
+        final int endPort = 1;
+        final SequencePortProvider provider1 = new SequencePortProvider(startPort, endPort);
+        final SequencePortProvider provider2 = provider1.copy();
+
+        assertThat(provider1.next(), equalTo(0));
+        assertThat(provider1.next(), equalTo(1));
+        assertThat(provider1.hasNext(), equalTo(false));
+
+        assertThat(provider2.next(), equalTo(0));
     }
 }

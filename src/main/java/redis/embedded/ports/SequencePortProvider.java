@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SequencePortProvider implements PortProvider {
     private AtomicInteger currentPort = new AtomicInteger(26379);
+    private final int startPort;
     private final int maxPort;
 
     public SequencePortProvider() {
@@ -23,6 +24,7 @@ public class SequencePortProvider implements PortProvider {
 
     public SequencePortProvider(int startPort, int maxPort) {
         this.currentPort = new AtomicInteger(startPort);
+        this.startPort = startPort;
         this.maxPort = maxPort;
     }
 
@@ -40,5 +42,10 @@ public class SequencePortProvider implements PortProvider {
     @Override
     public boolean hasNext() {
         return currentPort.get() <= maxPort;
+    }
+
+    @Override
+    public SequencePortProvider copy() {
+        return new SequencePortProvider(startPort, maxPort);
     }
 }

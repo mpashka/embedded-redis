@@ -1,3 +1,7 @@
+## 1.4.0
+
+ * Provides a `PortProvider#copy()` method to make a new copy of the `PortProvider` based on its constructor arguments (it will NOT copy the current state of the iterator) 
+
 ### 1.3.1
 
  * Fix an immutability problem in `RedisServer.Builder#copy()`

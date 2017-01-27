@@ -30,4 +30,9 @@ public class EphemeralPortProvider implements PortProvider {
         // The only case when this should return false is if there is no local port available on your machine
         return true;
     }
+
+    @Override
+    public EphemeralPortProvider copy() {
+        return new EphemeralPortProvider();
+    }
 }

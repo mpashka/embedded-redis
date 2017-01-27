@@ -12,12 +12,13 @@ import java.util.List;
  * A {@link PortProvider} returning a collection of port that is provided via a {@link Collection}.
  */
 public class PredefinedPortProvider implements PortProvider {
+    private final List<Integer> givenPorts;
     private final Iterator<Integer> current;
 
     public PredefinedPortProvider(Collection<Integer> ports) {
-        List<Integer> ports1 = new LinkedList<>();
-        ports1.addAll(ports);
-        this.current = ports1.iterator();
+        this.givenPorts = new LinkedList<>();
+        this.givenPorts.addAll(ports);
+        this.current = this.givenPorts.iterator();
     }
 
     @Override
@@ -31,5 +32,10 @@ public class PredefinedPortProvider implements PortProvider {
     @Override
     public boolean hasNext() {
         return current.hasNext();
+    }
+
+    @Override
+    public PredefinedPortProvider copy() {
+        return new PredefinedPortProvider(givenPorts);
     }
 }
