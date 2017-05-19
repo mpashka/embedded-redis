@@ -1,112 +1,120 @@
-
-/*
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-//*/
-
 plugins {
     id "com.jfrog.bintray" version "1.7"
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-
-def libGroup = 'eu.monniot.redis'
-def libVersion = '1.4.1-SNAPSHOT'
+def libGroup = 'eu.monniot.test'
+def libVersion = '1.5.0'
 def libArtifact = 'embedded-redis'
 
-group = libGroup
-version = libVersion
+rootProject.ext.libGroup = libGroup
+rootProject.ext.libVersion = libVersion
+rootProject.ext.libArtifact = libArtifact
 
-description = """Redis embedded server for Java integration testing"""
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+    group = libGroup
+    version = libVersion
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
+    description = """Redis embedded server for Java integration testing"""
 
-repositories {
-    maven { url "http://repo.maven.apache.org/maven2" }
-}
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
-dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'redis.clients', name: 'jedis', version: '2.8.0'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.18'
-
-    testCompile(group: 'org.mockito', name: 'mockito-core', version: '1.10.19') {
-        exclude(module: 'hamcrest-core')
-    }
-    testCompile(group: 'junit', name: 'junit', version: '4.12') {
-        exclude(module: 'hamcrest-core')
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
     }
 
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
-    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.18'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.4'
-    testCompile group: 'org.powermock', name: 'powermock-core', version: '1.6.4'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.4'
-}
+    repositories {
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
 
-// custom tasks for creating source/javadoc jars
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+    dependencies {
+        compile group: 'com.google.guava', name: 'guava', version: '19.0'
+        compile group: 'commons-io', name: 'commons-io', version: '2.4'
+        compile group: 'redis.clients', name: 'jedis', version: '2.8.0'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.18'
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
+        testCompile(group: 'org.mockito', name: 'mockito-core', version: '1.10.19') {
+            exclude(module: 'hamcrest-core')
+        }
+        testCompile(group: 'junit', name: 'junit', version: '4.12') {
+            exclude(module: 'hamcrest-core')
+        }
+
+        testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+        testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.18'
+        testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.4'
+        testCompile group: 'org.powermock', name: 'powermock-core', version: '1.6.4'
+        testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.4'
+    }
+
+    // custom tasks for creating source/javadoc jars
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
 
 // add javadoc/source jar tasks as artifacts
-artifacts {
-    archives sourcesJar, javadocJar
-}
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
 
+    // Publish on bintray configuration
+    bintray {
+        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
-// Maven publication
-publishing {
-    publications {
-        StandardLibPublication(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
+        publish = true
+        //dryRun = true
 
-            groupId libGroup
-            artifactId libArtifact
-            version libVersion
+        pkg {
+            repo = 'maven'
+            name = libArtifact // Will be overridden by project definition
+
+            websiteUrl = 'https://github.com/fmonniot/embedded-redis'
+            issueTrackerUrl = 'https://github.com/fmonniot/embedded-redis/issues'
+            vcsUrl = 'https://github.com/fmonniot/embedded-redis.git'
+            licenses = ['Apache-2.0']
+
+            publicDownloadNumbers = false
+
+            version {
+                name = libVersion
+            }
         }
     }
 }
 
-// Publish on bintray configuration
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+project(':') {
+    //apply plugin: 'maven-publish'
 
-    publish = true
-    dryRun = true
+    publishing {
+        publications {
+            lib(MavenPublication) {
+                from components.java
 
-    publications = ['StandardLibPublication']
+                artifact sourcesJar
+                artifact javadocJar
 
-    pkg {
-        repo = 'maven'
-        name = libArtifact
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/fmonniot/embedded-redis.git'
-        publicDownloadNumbers = true
+                artifactId libArtifact
+            }
+        }
+    }
 
-        version {
-            name = libVersion
+    bintray {
+        publications = ['lib']
+
+        pkg {
+            name = libArtifact
         }
     }
 }
