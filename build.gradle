@@ -1,5 +1,7 @@
 plugins {
     id "com.jfrog.bintray" version "1.7"
+    id "net.saliman.cobertura" version "2.4.0"
+    id "com.github.kt3k.coveralls" version "2.8.1"
 }
 
 def libGroup = 'eu.monniot.test'
@@ -15,6 +17,13 @@ allprojects {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
+
+    cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
+
+    test {
+        dependsOn cleanTest
+        testLogging.showStandardStreams = true
+    }
 
     group = libGroup
     version = libVersion

@@ -1,17 +1,28 @@
 package redis.embedded;
 
-import com.google.common.io.*;
-import org.junit.*;
-import org.junit.rules.*;
-import redis.clients.jedis.*;
-import redis.embedded.exceptions.*;
-import redis.embedded.util.*;
+import com.google.common.io.Resources;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.embedded.exceptions.EmbeddedRedisException;
+import redis.embedded.exceptions.RedisBuildingException;
+import redis.embedded.util.Architecture;
+import redis.embedded.util.OS;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class RedisServerTest {
@@ -21,9 +32,24 @@ public class RedisServerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @After
     public void stopServer() {
         if (redisServer != null && redisServer.isActive()) {
+            StringBuilder ports = new StringBuilder();
+            for (Integer port : redisServer.ports()) {
+                ports.append("port=").append(port).append(";");
+            }
+            logger.warn("Stopping redis server on ports: " + ports.toString());
+            logger.warn("isActive = " + redisServer.isActive());
+
+            StringBuilder args = new StringBuilder();
+            for (String arg : redisServer.args) {
+                args.append("port=").append(arg).append(";");
+            }
+            logger.warn("args = " + args.toString());
+
             redisServer.stop();
         }
     }
