@@ -1,2 +1,38 @@
-// TODO Use this file to configure all subprojects instead of having
-// to configure them via copy-paste
+subprojects { subproject ->
+
+    def projectSuffix = subproject.name.split("-").last().replace(".", "")
+
+    subproject.sourceSets {
+        main {
+            java.srcDir '../../src/main/java'
+            resources.srcDirs = ['resources']
+        }
+
+        test {
+            java.srcDir '../../src/test/java'
+            resources.srcDirs = ['resources']
+        }
+    }
+
+    subproject.publishing {
+        publications {
+            lib(MavenPublication) {
+                from components.java
+
+                artifact sourcesJar
+                artifact javadocJar
+
+                artifactId rootProject.libArtifact + '-' + projectSuffix
+            }
+        }
+    }
+
+    subproject.bintray {
+        publications = ['lib']
+
+        pkg {
+            name = rootProject.libArtifact + '-' + projectSuffix
+        }
+    }
+
+}
