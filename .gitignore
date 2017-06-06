@@ -17,6 +17,7 @@ buildNumber.properties
 .gradle
 /build/
 modules/*/build
+samples/build
 
 # Ignore Gradle GUI config
 gradle-app.setting
