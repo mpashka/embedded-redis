@@ -4,8 +4,8 @@ plugins {
     id "com.github.kt3k.coveralls" version "2.8.1"
 }
 
-def libGroup = 'eu.monniot.test'
-def libVersion = '1.5.0'
+def libGroup = 'eu.monniot.redis'
+def libVersion = '1.5.1'
 def libArtifact = 'embedded-redis'
 
 rootProject.ext.libGroup = libGroup
