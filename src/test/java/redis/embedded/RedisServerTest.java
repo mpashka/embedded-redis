@@ -199,7 +199,7 @@ public class RedisServerTest {
             list.add(s);
         } while (s != null);
 
-        assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.0.7")));
+        assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.2.100")));
         assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
     }
 
@@ -226,6 +226,6 @@ public class RedisServerTest {
             list.add(s);
         } while (s != null);
 
-        assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use")));
+        assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: No such file or directory")));
     }
 }
