@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedisSentinel extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*Sentinel runid is.*";
-
+    private static final String REDIS_READY_PATTERN = ".*Sentinel ID is.*";
     public RedisSentinel(List<String> args, int port) {
         super(port);
         this.args = new ArrayList<>(args);
