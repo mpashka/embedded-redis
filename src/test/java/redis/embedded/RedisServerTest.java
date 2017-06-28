@@ -70,7 +70,7 @@ public class RedisServerTest {
         redisServer = new RedisServer(6379);
         redisServer.start();
 
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.MILLISECONDS.sleep(500);
 
         redisServer.stop();
     }
@@ -80,7 +80,7 @@ public class RedisServerTest {
         redisServer = new RedisServer(RedisExecProvider.build(), 6379);
         redisServer.start();
 
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.MILLISECONDS.sleep(500);
 
         redisServer.stop();
     }
