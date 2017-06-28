@@ -1,30 +1,16 @@
-embedded-redis [![Build Status](https://travis-ci.org/fmonniot/embedded-redis.svg?branch=master)](https://travis-ci.org/fmonniot/embedded-redis)
+embedded-redis 
 ==============
 
 Redis embedded server for Java integration testing
 
-_This is a fork of https://github.com/kstyrc/embedded-redis and remove support for several features:_
-* _Embedded redis binaries, you MUST provide them yourself_
-* _Java 6 support_
-* _Spring data support (should work but not tested anymore)_
+_This is a fork of https://github.com/fmonniot/embedded-redis_
 
-_It also add support for some other features:_
-* _Support for Redis Cluster_
-* _Cleanup the API_
-* _Let user access Redis instances logs_
-* _More consistent use of PortProvider interface_
+_Used Redis v.3.2.1_ 
+_!!! Temporary MacOS not supported_
 
-Maven dependency
-==============
+_Features:_
+* _Windows support_
 
-This library is available on jCenter:
-```xml
-<dependency>
-  <groupId>eu.monniot.redis</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>1.2.2</version>
-</dependency>
-```
 
 Usage
 ==============
