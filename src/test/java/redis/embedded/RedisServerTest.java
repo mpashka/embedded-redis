@@ -13,6 +13,7 @@ import redis.embedded.exceptions.EmbeddedRedisException;
 import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.Architecture;
 import redis.embedded.util.OS;
+import redis.embedded.util.OsArchitecture;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -219,13 +220,23 @@ public class RedisServerTest {
         BufferedReader in = new BufferedReader(new InputStreamReader(errors));
 
         List<String> list = new ArrayList<>();
-
         String s;
         do {
             s = in.readLine();
             list.add(s);
         } while (s != null);
 
-        assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: No such file or directory")));
+        OsArchitecture os = OsArchitecture.detect();
+        switch (os.os()) {
+            case UNIX:
+                assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use")));
+                break;
+            case WINDOWS:
+                assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: No such file or directory")));
+                break;
+            case MAC_OS_X:
+                assertThat(list, hasItem(endsWith(" # Creating Server TCP listening socket *:6379: bind: Address already in use")));
+                break;
+        }
     }
 }
