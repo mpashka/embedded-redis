@@ -200,8 +200,21 @@ public class RedisServerTest {
             list.add(s);
         } while (s != null);
 
-        assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.2.100")));
-        assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
+        OsArchitecture os = OsArchitecture.detect();
+        switch (os.os()) {
+            case UNIX:
+                assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.2.1")));
+                assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
+                break;
+            case WINDOWS:
+                assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.2.100")));
+                assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
+                break;
+            case MAC_OS_X:
+                assertThat(list, hasItem(endsWith(" # Server started, Redis version 3.2.1")));
+                assertThat(list, hasItem(endsWith(" * The server is now ready to accept connections on port 6379")));
+                break;
+        }
     }
 
     @Test
