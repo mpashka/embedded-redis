@@ -22,7 +22,7 @@ redisServer.start();
 redisServer.stop();
 ```
 
-This works as long as you have a `redis-server-3.0.7-*` executables in your path (see
+This works as long as you have a `redis-server-3.2.1-*` executables in your path (see
 [redis/embedded/RedisExecProvider.java](https://github.com/fmonniot/embedded-redis/blob/master/src/main/java/redis/embedded/RedisExecProvider.java#L26)
 for the complete list of default binaries paths).
 
