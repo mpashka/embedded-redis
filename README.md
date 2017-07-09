@@ -6,7 +6,6 @@ Redis embedded server for Java integration testing
 _This is a fork of https://github.com/fmonniot/embedded-redis_
 
 _Used Redis v.3.2.1_ 
-_!!! Temporary MacOS not supported_
 
 _Features:_
 * _Windows support_
