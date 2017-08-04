@@ -5,7 +5,7 @@ plugins {
 }
 
 def libGroup = 'eu.monniot.redis'
-def libVersion = '1.5.1'
+def libVersion = '1.5.1-pp'
 def libArtifact = 'embedded-redis'
 
 rootProject.ext.libGroup = libGroup
@@ -98,6 +98,17 @@ allprojects {
 
             version {
                 name = libVersion
+            }
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(
+                        id: "exchange-releases",
+                        url: "http://nexus.pulse.corp/nexus/content/repositories/exchange-releases/"
+                )
             }
         }
     }
