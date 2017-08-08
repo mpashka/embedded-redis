@@ -204,6 +204,7 @@ public class RedisCluster implements Redis {
 
         private Collection<Integer> ports;
         private PortProvider portProvider;
+        private List<String> settings = new ArrayList<String>();
 
         private int numOfMasters;
         private int numOfReplicates;
@@ -238,6 +239,11 @@ public class RedisCluster implements Redis {
 
         public Builder numOfRetries(int numOfRetries) {
             this.numOfRetries = numOfRetries;
+            return this;
+        }
+        
+        public Builder setting(String setting) {
+            settings.add(setting);
             return this;
         }
 
@@ -279,10 +285,13 @@ public class RedisCluster implements Redis {
             RedisServer.Builder builder = serverBuilder.copy();
 
             builder.setting("cluster-enabled yes");
-            builder.setting("cluster-config-file nodes-" + port + ".conf");
+            builder.setting(String.format("cluster-config-file nodes-%s.conf", port));
             builder.setting("cluster-node-timeout 2000");
             builder.setting("appendonly yes");
-            builder.setting("dbfilename dump-" + port + ".rdb");
+            builder.setting(String.format("dbfilename dump-%s.rdb", port));
+            for (String setting : settings) {
+                builder.setting(setting);
+            }
 
             return builder.port(port).build();
         }
