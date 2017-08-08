@@ -130,6 +130,26 @@ public class RedisClusterTest {
 
     @Test
     @Configuration(master = 3, slave = 1)
+    public void startShouldStartClusterWithCustomSettings() throws IOException {
+        instance = new RedisCluster.Builder()
+                .serverPorts(ports).setting("maxmemory 128M").build();
+
+        Set<HostAndPort> hostAndPorts = new HashSet<>(ports.size());
+
+        for (Integer port : ports) {
+            hostAndPorts.add(new HostAndPort(LOCAL_HOST, port));
+        }
+
+        instance.start();
+        try (JedisCluster jc = new JedisCluster(hostAndPorts)) {
+            jc.hset("key", "field", "value");
+
+            assertThat(jc.hget("key", "field"), equalTo("value"));
+        }
+    }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
     public void portsShouldReplacePortProvider() {
         final PortProvider portProvider = new SequencePortProvider(3100, 3103);
 
