@@ -19,12 +19,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 
 public class RedisServerTest {
 
@@ -37,7 +40,10 @@ public class RedisServerTest {
 
     @After
     public void stopServer() {
-        if (redisServer != null && redisServer.isActive()) {
+        if (redisServer == null) {
+            return;
+        }
+        if (redisServer.isActive()) {
             StringBuilder ports = new StringBuilder();
             for (Integer port : redisServer.ports()) {
                 ports.append("port=").append(port).append(";");
@@ -52,6 +58,19 @@ public class RedisServerTest {
             logger.warn("args = " + args.toString());
 
             redisServer.stop();
+        } else if (redisServer.getState() == AbstractRedisInstance.State.failed) {
+            logger.info("Server failed. Logs");
+            InputStream errors = redisServer.errors();
+            BufferedReader in = new BufferedReader(new InputStreamReader(errors));
+            try {
+                String s;
+                while ((s = in.readLine()) != null) {
+                    logger.info("    {}", s);
+                }
+            } catch (IOException e) {
+                logger.warn("Internal error reading server log", e);
+            }
+
         }
     }
 
@@ -70,10 +89,12 @@ public class RedisServerTest {
     public void testSimpleRun() throws Exception {
         redisServer = new RedisServer(6379);
         redisServer.start();
+        assertEquals("State must be active", AbstractRedisInstance.State.active, redisServer.getState());
 
         TimeUnit.MILLISECONDS.sleep(500);
 
         redisServer.stop();
+        assertEquals("State must be inactive", AbstractRedisInstance.State.inactive, redisServer.getState());
     }
 
     @Test(timeout = 1500L)
@@ -208,11 +229,13 @@ public class RedisServerTest {
     public void shouldLetAccessToLogsWhenError() throws IOException {
         redisServer = new RedisServer.Builder().build();
         redisServer.start();
+        assertEquals("State must be active", AbstractRedisInstance.State.active, redisServer.getState());
 
         RedisServer server = new RedisServer.Builder().build();
         try {
             server.start();
         } catch (RuntimeException ignored) {
+            assertEquals("State must be failed", AbstractRedisInstance.State.failed, server.getState());
 
         }
 
@@ -239,4 +262,29 @@ public class RedisServerTest {
                 break;
         }
     }
+
+    @Test
+    public void shouldFailOnStartTimeout() throws Exception {
+        String sleepExecutable = "sleep";
+        if (OsArchitecture.detect().os() == OS.WINDOWS) {
+            sleepExecutable = "timeout";
+        }
+
+        Constructor<RedisServer> constructor = RedisServer.class.getDeclaredConstructor(List.class, int.class);
+        constructor.setAccessible(true);
+        RedisServer server = constructor.newInstance(Arrays.asList(sleepExecutable, "10"), 0);
+        server.setStartupTimeoutMs(500);
+
+        long now = System.currentTimeMillis();
+        try {
+            server.start();
+        } catch (RuntimeException e) {
+            // That is expected
+        }
+        assertEquals("State must be failed", AbstractRedisInstance.State.failed, server.getState());
+        assertEquals("Should wait AbstractRedisInstance.REDIS_STARTUP_TIMEOUT_MS and then fail", 600, 0.0 + System.currentTimeMillis() - now, 150);
+    }
+
+
+
 }

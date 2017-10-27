@@ -11,9 +11,15 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class RedisServer extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+
+    private static final Pattern REDIS_READY_PATTERN = Pattern.compile(
+            "(?:The server is now ready to accept connections on port)" +   // 3.2.1, 2.8.24
+            "|(?:Ready to accept connections)" // 4.0.2
+    );
+
     private static final int DEFAULT_REDIS_PORT = 6379;
 
     public RedisServer() throws IOException {
@@ -37,7 +43,7 @@ public class RedisServer extends AbstractRedisInstance {
         );
     }
 
-    private RedisServer(List<String> args, int port) {
+    RedisServer(List<String> args, int port) {
         super(port);
         this.args = new ArrayList<>(args);
     }
@@ -53,7 +59,7 @@ public class RedisServer extends AbstractRedisInstance {
     }
 
     @Override
-    protected String redisReadyPattern() {
+    protected Pattern redisReadyPattern() {
         return REDIS_READY_PATTERN;
     }
 
@@ -61,6 +67,7 @@ public class RedisServer extends AbstractRedisInstance {
     public static class Builder {
         private static final String LINE_SEPARATOR = System.getProperty("line.separator");
         private static final String CONF_FILENAME = "embedded-redis-server";
+        private static final long DEFAULT_STARTUP_TIMEOUT_MS = 3000;
 
         private File executable;
         private RedisExecProvider redisExecProvider = RedisExecProvider.build();
@@ -69,6 +76,8 @@ public class RedisServer extends AbstractRedisInstance {
 
         private String redisConf;
         private StringBuilder redisConfigBuilder;
+        private boolean logProcessOutput;
+        private long startupTimeoutMs = DEFAULT_STARTUP_TIMEOUT_MS;
 
         public Builder redisExecProvider(RedisExecProvider redisExecProvider) {
             this.redisExecProvider = redisExecProvider;
@@ -98,6 +107,16 @@ public class RedisServer extends AbstractRedisInstance {
             return this;
         }
 
+        public Builder logProcessOutput() {
+            this.logProcessOutput = true;
+            return this;
+        }
+
+        public Builder startupTimeoutMs(long startupTimeoutMs) {
+            this.startupTimeoutMs = startupTimeoutMs;
+            return this;
+        }
+
         @SuppressWarnings("Duplicates")
         public Builder setting(String configLine) {
             if (redisConf != null) {
@@ -116,7 +135,10 @@ public class RedisServer extends AbstractRedisInstance {
         public RedisServer build() {
             tryResolveConfAndExec();
             List<String> args = buildCommandArgs();
-            return new RedisServer(args, port);
+            RedisServer redisServer = new RedisServer(args, port);
+            redisServer.setLogProcessOutput(logProcessOutput);
+            redisServer.setStartupTimeoutMs(startupTimeoutMs);
+            return redisServer;
         }
 
         public void reset() {

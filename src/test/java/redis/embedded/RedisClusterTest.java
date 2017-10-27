@@ -1,18 +1,22 @@
 package redis.embedded;
 
 
-import org.junit.*;
-import org.junit.rules.*;
-import redis.clients.jedis.*;
-import redis.embedded.cluster.*;
-import redis.embedded.exceptions.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
+import redis.embedded.cluster.RedisCluster;
+import redis.embedded.exceptions.EmbeddedRedisException;
 import redis.embedded.ports.SequencePortProvider;
 
 import java.io.IOException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 
 public class RedisClusterTest {

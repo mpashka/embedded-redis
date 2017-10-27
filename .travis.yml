@@ -1,21 +1,26 @@
 language: java
 
+dist: trusty
+
+os:
+- linux
+
 jdk:
-  - oraclejdk8
- -
- -after_success:
- -- ./gradlew cobertura coveralls
- -- "./deploy.sh"
- -
- -before_cache:
- -  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
- -  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
- -cache:
- -  directories:
- -    - $HOME/.gradle/caches/
- -    - $HOME/.gradle/wrapper/
- -
- -env:
- -  global:
- -  - secure: bZde09PpsLhMd5xo7Gq5PhX9Bt0cY0MSxWqmkYNEOyM3qyysV36LC7scW8XibRG+THJq1sdpgbxpq/VxP9wG7PmWySkoL5+Vw9bkNHcQpaiWPn8aro7SP4ocEsrhWgvI52igigQo4FHZQchYADY0r/Z1ftPCItwmkG4nFuWiNZCCir/jgNxfohkev6GRp3heY0Z4JTbPYi4GQdzGrypDXJp9x4KEyTKoaWFMz78gga6B4PolUfcUijEHr/7V4HoONkWY1zGYTfdt/s4IAZK9lgzWCzoLIW+JBg2m80EzAGU7ifgRAlMLfhs/XxTuSRBbOIzyNPVF1qsjtnIrxWe80jJax3Zu6PXI2FW81yNoVhO6r4Raud5IeaEucYBh7HAjjWOzKfiVAtHDvfRgrJfPa0aTtHWDK0maxBNLQJEvDEwYh5ttYXjyN+89JX5N+2ZGVNHpN/98Jyem/BCsComVoZv/jlzGf1vMFZE1GpiFwsspMffomzXdpirpBEvj32rMDC9W+Zp2ZyyORHwlFrQK6wZlfogP7haSXjbR30ARtOCKNyM3uFJhZ4KHWP962OnsaUnkUH8AS1HoP1bYjP1I/uDDzXIta0BlCamuPUByHh+W2pamOuHG7u8g/GS3DJd0ZSetG17RUOfoknVQcx6tWAqmwrquSB+6Q8K+NSRqC5k=
- -  - secure: RxnGxsKFjVdsx/kZ5jaVZ1MkZrIqwUEtG63O2s1v53k1IZKl/FcseYCDn36Og/P3A0Rx7nYSgL0dlABQuIoO4s7XkFSHFptHmYd5rT8YNArcAQ+yykgFnflYCiwKi+7qTTO+1x0Ll8yg11KZMTc+NglXs6mJ8zYJJ2rJ9XTkaiU4EZI6JpTQ2Sho1MO4ypoAWxkqneiN7kuVZxYRq6G5+UrUSEm70ktLqcbrTUhQk++XGJ/7Lyu1T6TWiij6mLcTSqokIAHPCjyUqC02LO78K4tA00lXqNVR67eaSefGD9uY6GEy8wReiSwpIjRGrs6hJbB79ofqOVIs0wa3ZVKPQM+4PX07ha/VE0zXOUY48Ac2Sy6T0GIsiNThWNf2RnSa7GgCqH/5IxSZe0IJ0lTS3Sl1CPhPDPS6tHXup46LUXJL1f4tnNVi2WIzlub0JASg8OktDZlbOC4CsI4smPLnjFtpus0cX7+QxApi8Y6atrgLY6bZ4Qtrw348iS1SuiNBZzKo4TvqWBCPvi/ahP6dBa2Eu23CAVc9+Owe67R2IoQ/+HHMbJr/i1jhuvn0MvopggV5laf6t+pHHKoiAGCEThkRgaIEzrU/i7iW1kJ8Vgxvn4uWcvFWZCvLNf8edD9B6lRhZlbMfiKCz4i7+4IIeLGydYmZhOAKS/LMjuYIveA=
+- oraclejdk8
+
+after_success:
+- ./gradlew cobertura coveralls
+- "./deploy.sh"
+
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
+env:
+  global:
+  - secure: bZde09PpsLhMd5xo7Gq5PhX9Bt0cY0MSxWqmkYNEOyM3qyysV36LC7scW8XibRG+THJq1sdpgbxpq/VxP9wG7PmWySkoL5+Vw9bkNHcQpaiWPn8aro7SP4ocEsrhWgvI52igigQo4FHZQchYADY0r/Z1ftPCItwmkG4nFuWiNZCCir/jgNxfohkev6GRp3heY0Z4JTbPYi4GQdzGrypDXJp9x4KEyTKoaWFMz78gga6B4PolUfcUijEHr/7V4HoONkWY1zGYTfdt/s4IAZK9lgzWCzoLIW+JBg2m80EzAGU7ifgRAlMLfhs/XxTuSRBbOIzyNPVF1qsjtnIrxWe80jJax3Zu6PXI2FW81yNoVhO6r4Raud5IeaEucYBh7HAjjWOzKfiVAtHDvfRgrJfPa0aTtHWDK0maxBNLQJEvDEwYh5ttYXjyN+89JX5N+2ZGVNHpN/98Jyem/BCsComVoZv/jlzGf1vMFZE1GpiFwsspMffomzXdpirpBEvj32rMDC9W+Zp2ZyyORHwlFrQK6wZlfogP7haSXjbR30ARtOCKNyM3uFJhZ4KHWP962OnsaUnkUH8AS1HoP1bYjP1I/uDDzXIta0BlCamuPUByHh+W2pamOuHG7u8g/GS3DJd0ZSetG17RUOfoknVQcx6tWAqmwrquSB+6Q8K+NSRqC5k=
+  - secure: RxnGxsKFjVdsx/kZ5jaVZ1MkZrIqwUEtG63O2s1v53k1IZKl/FcseYCDn36Og/P3A0Rx7nYSgL0dlABQuIoO4s7XkFSHFptHmYd5rT8YNArcAQ+yykgFnflYCiwKi+7qTTO+1x0Ll8yg11KZMTc+NglXs6mJ8zYJJ2rJ9XTkaiU4EZI6JpTQ2Sho1MO4ypoAWxkqneiN7kuVZxYRq6G5+UrUSEm70ktLqcbrTUhQk++XGJ/7Lyu1T6TWiij6mLcTSqokIAHPCjyUqC02LO78K4tA00lXqNVR67eaSefGD9uY6GEy8wReiSwpIjRGrs6hJbB79ofqOVIs0wa3ZVKPQM+4PX07ha/VE0zXOUY48Ac2Sy6T0GIsiNThWNf2RnSa7GgCqH/5IxSZe0IJ0lTS3Sl1CPhPDPS6tHXup46LUXJL1f4tnNVi2WIzlub0JASg8OktDZlbOC4CsI4smPLnjFtpus0cX7+QxApi8Y6atrgLY6bZ4Qtrw348iS1SuiNBZzKo4TvqWBCPvi/ahP6dBa2Eu23CAVc9+Owe67R2IoQ/+HHMbJr/i1jhuvn0MvopggV5laf6t+pHHKoiAGCEThkRgaIEzrU/i7iW1kJ8Vgxvn4uWcvFWZCvLNf8edD9B6lRhZlbMfiKCz4i7+4IIeLGydYmZhOAKS/LMjuYIveA=

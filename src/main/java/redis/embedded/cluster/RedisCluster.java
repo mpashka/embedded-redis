@@ -247,6 +247,16 @@ public class RedisCluster implements Redis {
             return this;
         }
 
+        public Builder logProcessOutput() {
+            this.serverBuilder.logProcessOutput();
+            return this;
+        }
+
+        public Builder startupTimeoutMs(long startupTimeoutMs) {
+            this.serverBuilder.startupTimeoutMs(startupTimeoutMs);
+            return this;
+        }
+
         public RedisCluster build() {
             final List<Redis> servers = buildServers();
             if (numOfReplicates == 0) {
