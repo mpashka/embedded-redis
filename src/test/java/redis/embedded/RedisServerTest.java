@@ -19,12 +19,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 
 public class RedisServerTest {
 
@@ -239,4 +242,27 @@ public class RedisServerTest {
                 break;
         }
     }
+
+    @Test
+    public void shouldFailOnStartTimeout() throws Exception {
+        String sleepExecutable = "sleep";
+        if (OsArchitecture.detect().os() == OS.WINDOWS) {
+            sleepExecutable = "timeout";
+        }
+
+        Constructor<RedisServer> constructor = RedisServer.class.getDeclaredConstructor(List.class, int.class);
+        constructor.setAccessible(true);
+        RedisServer server = constructor.newInstance(Arrays.asList(sleepExecutable, "10"), 0);
+        server.setStartupTimeoutMs(500);
+        server.setLogProcessOutput(true);
+
+        long now = System.currentTimeMillis();
+        try {
+            server.start();
+        } catch (RuntimeException e) {
+            // That is expected
+        }
+        assertEquals("Should wait AbstractRedisInstance.REDIS_STARTUP_TIMEOUT_MS and then fail", 600, 0.0 + System.currentTimeMillis() - now, 150);
+    }
+
 }
