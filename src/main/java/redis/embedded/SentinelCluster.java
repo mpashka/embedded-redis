@@ -6,7 +6,8 @@ import redis.embedded.ports.EphemeralPortProvider;
 import redis.embedded.ports.PredefinedPortProvider;
 import redis.embedded.ports.SequencePortProvider;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.*;
 
 @SuppressWarnings("unused")
@@ -171,6 +172,19 @@ public class SentinelCluster implements Redis {
             this.groups.add(new ReplicationGroup(masterName, slaveCount, this.replicationGroupPortProvider));
             return this;
         }
+
+        public Builder logProcessOutput() {
+            this.serverBuilder.logProcessOutput();
+            this.sentinelBuilder.logProcessOutput();
+            return this;
+        }
+
+        public Builder startupTimeoutMs(long startupTimeoutMs) {
+            this.serverBuilder.startupTimeoutMs(startupTimeoutMs);
+            this.sentinelBuilder.startupTimeoutMs(startupTimeoutMs);
+            return this;
+        }
+
 
         public SentinelCluster build() {
             final List<Redis> sentinels = buildSentinels();
