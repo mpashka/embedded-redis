@@ -166,3 +166,4 @@ Contributors
  * Artem Orobets ([@enisher](https://github.com/enisher))
  * Sean Simonsen ([@SeanSimonsen](https://github.com/SeanSimonsen))
  * Rob Winch ([@rwinch](https://github.com/rwinch))
+ * Pavel Moukhataev ([@mpashka](https://github.com/mpashka))
