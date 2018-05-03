@@ -116,7 +116,7 @@ public class RedisClusterTest {
     @Configuration(master = 3, slave = 1)
     public void startShouldStartCluster() throws IOException {
         instance = new RedisCluster.Builder()
-                .serverPorts(ports).build();
+                .serverPorts(ports).logProcessOutput().build();
 
         Set<HostAndPort> hostAndPorts = new HashSet<>(ports.size());
 
