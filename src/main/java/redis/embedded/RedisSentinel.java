@@ -9,9 +9,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class RedisSentinel extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*Sentinel ID is.*";
+    private static final Pattern REDIS_READY_PATTERN = Pattern.compile(
+            "(?:Sentinel ID is)" +  // 3.2.1, 4.0.2
+            "|(?:Sentinel runid is)" // 2.8.24
+    );
+
     public RedisSentinel(List<String> args, int port) {
         super(port);
         this.args = new ArrayList<>(args);
@@ -23,7 +28,7 @@ public class RedisSentinel extends AbstractRedisInstance {
     }
 
     @Override
-    protected String redisReadyPattern() {
+    protected Pattern redisReadyPattern() {
         return REDIS_READY_PATTERN;
     }
 
@@ -36,6 +41,7 @@ public class RedisSentinel extends AbstractRedisInstance {
         private static final String FAIL_OVER_LINE = "sentinel failover-timeout %s %d";
         private static final String PARALLEL_SYNCS_LINE = "sentinel parallel-syncs %s %d";
         private static final String PORT_LINE = "port %d";
+        private static final long DEFAULT_STARTUP_TIMEOUT_MS = 3000;
 
         private File executable;
         private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
@@ -49,6 +55,8 @@ public class RedisSentinel extends AbstractRedisInstance {
         private String sentinelConf;
 
         private StringBuilder redisConfigBuilder;
+        private boolean logProcessOutput;
+        private long startupTimeoutMs = DEFAULT_STARTUP_TIMEOUT_MS;
 
         public Builder redisExecProvider(RedisExecProvider redisExecProvider) {
             this.redisExecProvider = redisExecProvider;
@@ -113,10 +121,23 @@ public class RedisSentinel extends AbstractRedisInstance {
             return this;
         }
 
+        public Builder logProcessOutput() {
+            this.logProcessOutput = true;
+            return this;
+        }
+
+        public Builder startupTimeoutMs(long startupTimeoutMs) {
+            this.startupTimeoutMs = startupTimeoutMs;
+            return this;
+        }
+
         public RedisSentinel build() {
             tryResolveConfAndExec();
             List<String> args = buildCommandArgs();
-            return new RedisSentinel(args, port);
+            RedisSentinel redisSentinel = new RedisSentinel(args, port);
+            redisSentinel.setLogProcessOutput(logProcessOutput);
+            redisSentinel.setStartupTimeoutMs(startupTimeoutMs);
+            return redisSentinel;
         }
 
         private void tryResolveConfAndExec() {
