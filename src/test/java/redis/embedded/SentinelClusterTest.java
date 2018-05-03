@@ -1,14 +1,22 @@
 package redis.embedded;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 import redis.embedded.util.JedisUtil;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -196,6 +204,35 @@ public class SentinelClusterTest {
         // When
         testClusterWithThreeMasters(masters, cluster, sentinelHosts);
     }
+
+    @Test
+    @Configuration(master = 3, slave = 1)
+    public void checkLogProcessOutput() throws IOException {
+            //given
+            final String[] masters = new String[]{"master1", "master2", "master3"};
+            final SentinelCluster cluster = new SentinelCluster.Builder().sentinelCount(3).quorumSize(2)
+                    .replicationGroup(masters[0], 1)
+                    .replicationGroup(masters[1], 1)
+                    .replicationGroup(masters[2], 1)
+                    .logProcessOutput()
+                    .startupTimeoutMs(10000)
+                    .build();
+
+        try {
+            assertThat(cluster.isActive(), equalTo(false));
+
+            cluster.start();
+
+            assertThat(cluster.isActive(), equalTo(true));
+
+            // Must provide some output
+            assertThat(IOUtils.readLines(cluster.errors()).size(), greaterThan(3));
+            assertThat(cluster.ports().size(), equalTo(9));
+        } finally {
+            cluster.stop();
+        }
+    }
+
 
     // Helper
     private void testClusterWithThreeMasters(String[] masters, SentinelCluster cluster, Set<String> sentinelHosts) {
